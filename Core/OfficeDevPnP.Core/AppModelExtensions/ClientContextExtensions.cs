@@ -24,7 +24,17 @@ namespace Microsoft.SharePoint.Client
                 throw new ArgumentException(CoreResources.ClientContextExtensions_Clone_Url_of_the_site_is_required_, "siteUrl");
             }
 
-            return clientContext.Clone(new Uri(siteUrl));
+            var ctx = clientContext.Clone(new Uri(siteUrl));
+
+            ctx.ExecutingWebRequest += Ctx_ExecutingWebRequest;
+
+            return ctx;
+        }
+
+        private static void Ctx_ExecutingWebRequest(object sender, WebRequestEventArgs e)
+        {
+            e.WebRequestExecutor.WebRequest.Headers.Add("X-FORMS_BASED_AUTH_ACCEPTED", "f");
+            e.WebRequestExecutor.WebRequest.ServerCertificateValidationCallback += (o, certificate, chain, errors) => true;
         }
 
 
