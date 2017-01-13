@@ -21,7 +21,7 @@ namespace Microsoft.SharePoint.Client
         {
             if (string.IsNullOrWhiteSpace(siteUrl))
             {
-                throw new ArgumentException(CoreResources.ClientContextExtensions_Clone_Url_of_the_site_is_required_, "siteUrl");
+                throw new ArgumentException(CoreResources.ClientContextExtensions_Clone_Url_of_the_site_is_required_, nameof(siteUrl));
             }
 
             var ctx = clientContext.Clone(new Uri(siteUrl));
@@ -116,7 +116,7 @@ namespace Microsoft.SharePoint.Client
                     }
                 }
             }
-            throw new MaximumRetryAttemptedException(string.Format("Maximum retry attempts {0}, has be attempted.", retryCount));
+            throw new MaximumRetryAttemptedException($"Maximum retry attempts {retryCount}, has be attempted.");
         }
 
 
@@ -130,7 +130,7 @@ namespace Microsoft.SharePoint.Client
         {
             if (siteUrl == null)
             {
-                throw new ArgumentException(CoreResources.ClientContextExtensions_Clone_Url_of_the_site_is_required_, "siteUrl");
+                throw new ArgumentException(CoreResources.ClientContextExtensions_Clone_Url_of_the_site_is_required_, nameof(siteUrl));
             }
 
             ClientContext clonedClientContext = new ClientContext(siteUrl);
@@ -182,6 +182,21 @@ namespace Microsoft.SharePoint.Client
                 clientContext.ExecuteQueryRetry();
             }
             return clientContext.Clone(site.Url);
+        }
+
+        /// <summary>
+        /// Checks if the used ClientContext is app-only
+        /// </summary>
+        /// <param name="clientContext">The ClientContext to inspect</param>
+        /// <returns>True if app-only, false otherwise</returns>
+        public static bool IsAppOnly(this ClientRuntimeContext clientContext)
+        {
+            if (clientContext.Credentials == null)
+            {
+                return true;
+            }
+
+            return false;
         }
 
         /// <summary>
